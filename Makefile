@@ -1,16 +1,22 @@
 #FLAGS = -O3 -pg
 FLAGS = -O3
 
-all:
+.DEFAULT_GOAL := all
+
+libIMACPP.a: MeterCollection.cpp MetroWeights_Mazzola.cpp Metrum.cpp OnsetGroup_Memory.cpp
 	g++ -c ${FLAGS} -o MeterCollection.o MeterCollection.cpp
 	g++ -c ${FLAGS} -o MetroWeights_Mazzola.o MetroWeights_Mazzola.cpp
 	g++ -c ${FLAGS} -o Metrum.o Metrum.cpp
 	g++ -c ${FLAGS} -o OnsetGroup_Memory.o OnsetGroup_Memory.cpp
-	g++ -o imacpp imacpp.cpp MeterCollection.o MetroWeights_Mazzola.o Metrum.o OnsetGroup_Memory.o
 	ar rvs libIMACPP.a *.o
 
-imacpp:	all
+imacpp:	libIMACPP.a imacpp.cpp
 	g++ -o imacpp imacpp.cpp -L. -lIMACPP
-	
+
+onsets2ima: libIMACPP.a onsets2ima.cpp
+	g++ -o onsets2ima onsets2ima.cpp -L. -lIMACPP
+
+all: libIMACPP.a imacpp onsets2ima
+
 clean:
-	rm *.o imacpp libIMACPP.a
+	rm *.o imacpp onsets2ima libIMACPP.a
